@@ -18,10 +18,11 @@ import confetti from 'canvas-confetti';
 import { useStore } from '../context/StoreContext';
 
 const INDIAN_STATES = [
-  'Andhra Pradesh', 'Assam', 'Bihar', 'Chandigarh', 'Chhattisgarh', 'Delhi NCR',
-  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu & Kashmir', 'Jharkhand',
-  'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Odisha', 'Punjab',
-  'Rajasthan', 'Tamil Nadu', 'Telangana', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
+  'Uttar Pradesh', 'Delhi NCR', 'Rajasthan', 'Haryana', 'Punjab',
+  'Bihar', 'Madhya Pradesh', 'Maharashtra', 'Gujarat', 'Uttarakhand',
+  'Chandigarh', 'Himachal Pradesh', 'Jammu & Kashmir', 'Jharkhand',
+  'Karnataka', 'Kerala', 'Tamil Nadu', 'Telangana', 'Andhra Pradesh',
+  'Assam', 'West Bengal', 'Goa', 'Chhattisgarh', 'Odisha'
 ];
 
 export const CheckoutModal = () => {
@@ -37,7 +38,7 @@ export const CheckoutModal = () => {
     appliedCoupon
   } = useStore();
 
-  const [step, setStep] = useState(1); // 1: Shipping, 2: Payment, 3: Success Confirmation
+  const [step, setStep] = useState(1);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
@@ -48,10 +49,10 @@ export const CheckoutModal = () => {
     email: '',
     address: '',
     city: '',
-    state: 'Delhi NCR',
+    state: 'Uttar Pradesh',
     pincode: '',
-    paymentMethod: 'upi', // 'upi', 'card', 'netbanking', 'cod'
-    upiApp: 'gpay', // 'gpay', 'phonepe', 'paytm'
+    paymentMethod: 'upi',
+    upiApp: 'gpay',
     shippingMethod: 'standard'
   });
 
@@ -64,22 +65,19 @@ export const CheckoutModal = () => {
       style: 'currency',
       currency: 'INR',
       maximumFractionDigits: 0
-    }).format(amount);
+    }).format(amount || 0);
   };
 
   const validateShippingForm = () => {
     const errs = {};
     if (!formData.name.trim()) errs.name = 'Full name is required';
     if (!formData.phone.trim() || !/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
-      errs.phone = 'Valid 10-digit mobile number required';
+      errs.phone = 'Valid 10-digit mobile required';
     }
-    if (!formData.email.trim() || !formData.email.includes('@')) {
-      errs.email = 'Valid email is required for tracking';
-    }
-    if (!formData.address.trim()) errs.address = 'Street address is required';
-    if (!formData.city.trim()) errs.city = 'City is required';
+    if (!formData.address.trim()) errs.address = 'Delivery address is required';
+    if (!formData.city.trim()) errs.city = 'City / Town required';
     if (!formData.pincode.trim() || formData.pincode.length !== 6) {
-      errs.pincode = 'Valid 6-digit postal PIN code required';
+      errs.pincode = '6-digit PIN code required';
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -95,111 +93,104 @@ export const CheckoutModal = () => {
   const handleCompleteOrder = () => {
     setIsProcessingPayment(true);
 
-    // Simulate payment gateway processing
     setTimeout(() => {
       const order = createOrder({
         customer: {
           name: formData.name,
           phone: `+91 ${formData.phone}`,
-          email: formData.email,
+          email: formData.email || 'customer@shivaycollections.com',
           address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`
         },
-        shippingOption: formData.shippingMethod === 'express' ? 'Express Air' : 'Standard Surface',
+        shippingOption: 'Standard Surface Delivery',
         paymentMethod: 
           formData.paymentMethod === 'upi' ? `Razorpay UPI (${formData.upiApp.toUpperCase()})` :
-          formData.paymentMethod === 'card' ? 'Razorpay Debit / Credit Card' :
-          formData.paymentMethod === 'netbanking' ? 'Razorpay NetBanking' : 'Cash on Delivery (COD)'
+          formData.paymentMethod === 'card' ? 'Debit / Credit Card' :
+          formData.paymentMethod === 'netbanking' ? 'NetBanking' : 'Cash on Delivery (COD)'
       });
 
       setConfirmedOrder(order);
       setIsProcessingPayment(false);
       setStep(3);
 
-      // Trigger Confetti!
       confetti({
-        particleCount: 120,
-        spread: 80,
+        particleCount: 100,
+        spread: 70,
         origin: { y: 0.6 }
       });
-    }, 1500);
+    }, 1200);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-stone-950/70 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto bg-stone-950/75 backdrop-blur-sm animate-fadeIn">
       
       <div 
-        className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-stone-200 my-auto"
+        className="relative w-full max-w-xl sm:max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-stone-200 my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header */}
-        <div className="p-5 border-b border-stone-200 bg-stone-50 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-stone-900 text-brand-400 flex items-center justify-center font-serif text-lg font-bold">
-              S
+        <div className="p-4 sm:p-5 border-b border-stone-200 bg-stone-50 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-full overflow-hidden border border-brand-400 shrink-0">
+              <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <div>
-              <h2 className="font-serif text-base font-bold text-stone-900">
-                {step === 3 ? 'Order Confirmed!' : 'Shivay Collections Checkout'}
+              <h2 className="font-serif text-sm sm:text-base font-bold text-stone-900 leading-none">
+                {step === 3 ? 'Order Placed!' : 'Checkout • Shivay Collections'}
               </h2>
-              <p className="text-[11px] text-stone-500">Official Store: shivaycollections.com</p>
+              <p className="text-[10px] text-stone-500 mt-0.5">Barwar Kheri • shivaycollections.com</p>
             </div>
           </div>
 
           {step !== 3 && (
             <button
               onClick={() => setIsCheckoutOpen(false)}
-              className="p-2 rounded-full text-stone-500 hover:text-stone-800 hover:bg-stone-200 transition"
-              aria-label="Close checkout"
+              className="p-1.5 rounded-full text-stone-500 hover:text-stone-800 hover:bg-stone-200 transition"
+              aria-label="Close"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           )}
         </div>
 
-        {/* Multi-step progress bar */}
+        {/* Progress indicators */}
         {step !== 3 && (
-          <div className="px-6 py-3 bg-white border-b border-stone-100 flex items-center justify-between text-xs font-semibold">
-            <div className={`flex items-center gap-1.5 ${step >= 1 ? 'text-brand-700' : 'text-stone-400'}`}>
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step >= 1 ? 'bg-brand-500 text-stone-950 font-black' : 'bg-stone-200 text-stone-600'}`}>1</span>
-              <span>Shipping Address</span>
+          <div className="px-4 py-2.5 bg-white border-b border-stone-100 flex items-center justify-between text-[11px] font-semibold">
+            <div className={`flex items-center gap-1 ${step >= 1 ? 'text-brand-700' : 'text-stone-400'}`}>
+              <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] ${step >= 1 ? 'bg-brand-500 text-stone-950 font-black' : 'bg-stone-200'}`}>1</span>
+              <span>Address</span>
             </div>
-            <div className="h-0.5 flex-1 mx-3 bg-stone-200">
+            <div className="h-0.5 flex-1 mx-2 bg-stone-200">
               <div className={`h-full bg-brand-500 transition-all ${step === 2 ? 'w-full' : 'w-0'}`} />
             </div>
-            <div className={`flex items-center gap-1.5 ${step === 2 ? 'text-brand-700' : 'text-stone-400'}`}>
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step === 2 ? 'bg-brand-500 text-stone-950 font-black' : 'bg-stone-200 text-stone-600'}`}>2</span>
-              <span>Payment & Gateway</span>
+            <div className={`flex items-center gap-1 ${step === 2 ? 'text-brand-700' : 'text-stone-400'}`}>
+              <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] ${step === 2 ? 'bg-brand-500 text-stone-950 font-black' : 'bg-stone-200'}`}>2</span>
+              <span>Payment</span>
             </div>
           </div>
         )}
 
-        {/* Step 1: Shipping Details */}
+        {/* Step 1: Shipping Form */}
         {step === 1 && (
-          <div className="p-6 sm:p-8 space-y-6 max-h-[75vh] overflow-y-auto">
-            
-            <form onSubmit={handleNextToPayment} className="space-y-4">
-              <h3 className="text-sm font-bold text-stone-900 uppercase tracking-wider flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-brand-600" />
-                <span>Delivery Address (Pan-India)</span>
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="p-4 sm:p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+            <form onSubmit={handleNextToPayment} className="space-y-3.5">
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">Full Name *</label>
+                  <label className="block text-[11px] font-bold text-stone-700 mb-1">Full Name *</label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Rahul Sharma"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-400"
+                    placeholder="e.g. Ramesh Kumar"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-400"
                   />
-                  {errors.name && <p className="text-[11px] text-rose-600 mt-1">{errors.name}</p>}
+                  {errors.name && <p className="text-[10px] text-rose-600 mt-0.5">{errors.name}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">Mobile Number (for SMS & WhatsApp Tracking) *</label>
+                  <label className="block text-[11px] font-bold text-stone-700 mb-1">Mobile (WhatsApp Tracking) *</label>
                   <div className="flex">
-                    <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-stone-200 bg-stone-100 text-stone-500 text-xs">
+                    <span className="inline-flex items-center px-2.5 rounded-l-xl border border-r-0 border-stone-200 bg-stone-100 text-stone-500 text-xs">
                       +91
                     </span>
                     <input
@@ -208,56 +199,44 @@ export const CheckoutModal = () => {
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="9876543210"
-                      className="w-full px-3.5 py-2.5 text-xs rounded-r-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-400"
+                      className="w-full px-3 py-2 text-xs rounded-r-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-400"
                     />
                   </div>
-                  {errors.phone && <p className="text-[11px] text-rose-600 mt-1">{errors.phone}</p>}
+                  {errors.phone && <p className="text-[10px] text-rose-600 mt-0.5">{errors.phone}</p>}
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">Email Address *</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="rahul.sharma@example.com"
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-400"
-                />
-                {errors.email && <p className="text-[11px] text-rose-600 mt-1">{errors.email}</p>}
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">Flat / House No. / Building / Street *</label>
+                <label className="block text-[11px] font-bold text-stone-700 mb-1">Street / House No. / Landmark *</label>
                 <input
                   type="text"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  placeholder="Flat 304, Royal Palms, Link Road"
-                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-400"
+                  placeholder="Near Main Market, Ward No. 4"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200"
                 />
-                {errors.address && <p className="text-[11px] text-rose-600 mt-1">{errors.address}</p>}
+                {errors.address && <p className="text-[10px] text-rose-600 mt-0.5">{errors.address}</p>}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">City / District *</label>
+                  <label className="block text-[11px] font-bold text-stone-700 mb-1">City / District *</label>
                   <input
                     type="text"
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    placeholder="e.g. Jaipur"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-400"
+                    placeholder="City"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200"
                   />
-                  {errors.city && <p className="text-[11px] text-rose-600 mt-1">{errors.city}</p>}
+                  {errors.city && <p className="text-[10px] text-rose-600 mt-0.5">{errors.city}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">State *</label>
+                  <label className="block text-[11px] font-bold text-stone-700 mb-1">State *</label>
                   <select
                     value={formData.state}
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-stone-200 bg-white focus:outline-none focus:ring-2 focus:ring-brand-400"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 bg-white"
                   >
                     {INDIAN_STATES.map((st) => (
                       <option key={st} value={st}>{st}</option>
@@ -266,305 +245,186 @@ export const CheckoutModal = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">PIN Code (6 digits) *</label>
+                  <label className="block text-[11px] font-bold text-stone-700 mb-1">PIN Code (6 digits) *</label>
                   <input
                     type="text"
                     maxLength={6}
                     value={formData.pincode}
                     onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                    placeholder="302001"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-400"
+                    placeholder="PIN Code"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200"
                   />
-                  {errors.pincode && <p className="text-[11px] text-rose-600 mt-1">{errors.pincode}</p>}
+                  {errors.pincode && <p className="text-[10px] text-rose-600 mt-0.5">{errors.pincode}</p>}
                 </div>
               </div>
 
-              {/* Order summary small banner */}
-              <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 flex items-center justify-between text-xs">
+              <div className="pt-2 flex items-center justify-between">
                 <div>
-                  <p className="font-bold text-stone-900">{cart.length} items in cart</p>
-                  <p className="text-stone-500">Total: <strong className="text-brand-700">{formatPrice(grandTotal)}</strong></p>
+                  <p className="text-xs font-bold text-stone-900">{cart.length} items</p>
+                  <p className="text-xs text-brand-700 font-extrabold">{formatPrice(grandTotal)}</p>
                 </div>
                 <button
                   type="submit"
-                  className="px-6 py-3 rounded-xl bg-stone-900 hover:bg-brand-600 text-white font-bold text-xs flex items-center gap-2 transition shadow"
+                  className="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-brand-600 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm"
                 >
-                  <span>Continue to Payment</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>Select Payment</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
-            </form>
 
+            </form>
           </div>
         )}
 
-        {/* Step 2: Payment Selection & Razorpay simulation */}
+        {/* Step 2: Payment Mode */}
         {step === 2 && (
-          <div className="p-6 sm:p-8 space-y-6 max-h-[75vh] overflow-y-auto">
-            
+          <div className="p-4 sm:p-6 space-y-4 max-h-[75vh] overflow-y-auto">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-stone-900 uppercase tracking-wider flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                <span>Select Payment Mode</span>
-              </h3>
-              <button
-                onClick={() => setStep(1)}
-                className="text-xs text-brand-700 hover:underline font-semibold"
-              >
+              <span className="text-xs font-bold text-stone-900 uppercase">Payment Method</span>
+              <button onClick={() => setStep(1)} className="text-xs text-brand-700 font-semibold underline">
                 ← Edit Address
               </button>
             </div>
 
-            {/* Payment Method Cards */}
-            <div className="grid grid-cols-1 gap-3">
-              
-              {/* UPI (Razorpay) */}
-              <label className={`p-4 rounded-2xl border-2 cursor-pointer transition flex items-start gap-3 ${
-                formData.paymentMethod === 'upi' ? 'border-brand-500 bg-brand-50/40' : 'border-stone-200 hover:border-stone-300'
+            <div className="space-y-2.5">
+              {/* UPI */}
+              <label className={`p-3 rounded-2xl border-2 cursor-pointer transition flex items-start gap-2.5 ${
+                formData.paymentMethod === 'upi' ? 'border-brand-500 bg-brand-50/40' : 'border-stone-200'
               }`}>
                 <input
                   type="radio"
-                  name="paymentMethod"
+                  name="pm"
                   value="upi"
                   checked={formData.paymentMethod === 'upi'}
                   onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
                   className="mt-1"
                 />
                 <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs sm:text-sm text-stone-900 flex items-center gap-2">
-                      <Smartphone className="w-4 h-4 text-emerald-600" />
-                      Razorpay UPI (Fastest & 100% Free)
-                    </span>
-                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">
-                      Instant Approval
-                    </span>
-                  </div>
-                  <p className="text-xs text-stone-500 mt-1">
-                    Pay using Google Pay, PhonePe, Paytm, BHIM, or any UPI app.
-                  </p>
-
-                  {formData.paymentMethod === 'upi' && (
-                    <div className="flex gap-2 mt-3">
-                      {['gpay', 'phonepe', 'paytm'].map((app) => (
-                        <button
-                          key={app}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, upiApp: app })}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold border uppercase transition ${
-                            formData.upiApp === app
-                              ? 'bg-stone-900 text-white border-stone-900'
-                              : 'bg-white text-stone-700 border-stone-200'
-                          }`}
-                        >
-                          {app === 'gpay' ? 'Google Pay' : app === 'phonepe' ? 'PhonePe' : 'Paytm'}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  <span className="font-bold text-xs text-stone-900 flex items-center gap-1.5">
+                    <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
+                    UPI (Google Pay, PhonePe, Paytm, BHIM)
+                  </span>
+                  <p className="text-[10px] text-stone-500 mt-0.5">Instant online payment direct to store</p>
                 </div>
               </label>
 
-              {/* Debit / Credit Cards */}
-              <label className={`p-4 rounded-2xl border-2 cursor-pointer transition flex items-start gap-3 ${
-                formData.paymentMethod === 'card' ? 'border-brand-500 bg-brand-50/40' : 'border-stone-200 hover:border-stone-300'
+              {/* COD */}
+              <label className={`p-3 rounded-2xl border-2 cursor-pointer transition flex items-start gap-2.5 ${
+                formData.paymentMethod === 'cod' ? 'border-brand-500 bg-brand-50/40' : 'border-stone-200'
               }`}>
                 <input
                   type="radio"
-                  name="paymentMethod"
-                  value="card"
-                  checked={formData.paymentMethod === 'card'}
-                  onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
-                  className="mt-1"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs sm:text-sm text-stone-900 flex items-center gap-2">
-                      <CreditCard className="w-4 h-4 text-blue-600" />
-                      Debit / Credit Cards (RuPay, Visa, MasterCard)
-                    </span>
-                  </div>
-                  <p className="text-xs text-stone-500 mt-1">
-                    All major Indian banks with 3D Secure OTP verification.
-                  </p>
-                </div>
-              </label>
-
-              {/* NetBanking */}
-              <label className={`p-4 rounded-2xl border-2 cursor-pointer transition flex items-start gap-3 ${
-                formData.paymentMethod === 'netbanking' ? 'border-brand-500 bg-brand-50/40' : 'border-stone-200 hover:border-stone-300'
-              }`}>
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="netbanking"
-                  checked={formData.paymentMethod === 'netbanking'}
-                  onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
-                  className="mt-1"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs sm:text-sm text-stone-900 flex items-center gap-2">
-                      <Building2 className="w-4 h-4 text-purple-600" />
-                      NetBanking (50+ Indian Banks)
-                    </span>
-                  </div>
-                  <p className="text-xs text-stone-500 mt-1">
-                    HDFC, SBI, ICICI, Axis, Kotak Mahindra, PNB, and more.
-                  </p>
-                </div>
-              </label>
-
-              {/* Cash on Delivery (COD) */}
-              <label className={`p-4 rounded-2xl border-2 cursor-pointer transition flex items-start gap-3 ${
-                formData.paymentMethod === 'cod' ? 'border-brand-500 bg-brand-50/40' : 'border-stone-200 hover:border-stone-300'
-              }`}>
-                <input
-                  type="radio"
-                  name="paymentMethod"
+                  name="pm"
                   value="cod"
                   checked={formData.paymentMethod === 'cod'}
                   onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
                   className="mt-1"
                 />
                 <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs sm:text-sm text-stone-900 flex items-center gap-2">
-                      <Banknote className="w-4 h-4 text-amber-600" />
-                      Cash on Delivery (COD)
-                    </span>
-                    <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">
-                      Pay at Doorstep
-                    </span>
-                  </div>
-                  <p className="text-xs text-stone-500 mt-1">
-                    Pay with Cash or scan Delivery Partner UPI QR upon arrival.
-                  </p>
+                  <span className="font-bold text-xs text-stone-900 flex items-center gap-1.5">
+                    <Banknote className="w-3.5 h-3.5 text-amber-600" />
+                    Cash on Delivery (COD)
+                  </span>
+                  <p className="text-[10px] text-stone-500 mt-0.5">Pay at doorstep upon arrival</p>
                 </div>
               </label>
 
-            </div>
-
-            {/* Total Summary Breakdown */}
-            <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-2 text-xs">
-              <div className="flex justify-between text-stone-600">
-                <span>Subtotal</span>
-                <span>{formatPrice(cartSubtotal)}</span>
-              </div>
-              {discountAmount > 0 && (
-                <div className="flex justify-between text-emerald-700">
-                  <span>Coupon Discount ({appliedCoupon?.code})</span>
-                  <span>-{formatPrice(discountAmount)}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-stone-600">
-                <span>Delivery Charges</span>
-                <span>{shippingFee === 0 ? 'FREE' : formatPrice(shippingFee)}</span>
-              </div>
-              <div className="flex justify-between text-sm font-black text-stone-900 pt-2 border-t border-stone-200">
-                <span>Payable Amount</span>
-                <span className="text-brand-700 text-base">{formatPrice(grandTotal)}</span>
-              </div>
-            </div>
-
-            {/* Pay Now Button */}
-            <button
-              onClick={handleCompleteOrder}
-              disabled={isProcessingPayment}
-              className="w-full py-4 rounded-2xl bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-stone-950 font-black text-sm flex items-center justify-center gap-2 shadow-xl shadow-brand-500/25 transition transform active:scale-98"
-            >
-              {isProcessingPayment ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-stone-950 border-t-transparent rounded-full animate-spin" />
-                  <span>Authorizing via Razorpay Secure Gateway...</span>
-                </>
-              ) : (
-                <>
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>
-                    {formData.paymentMethod === 'cod' ? 'Confirm Order with Cash on Delivery' : `Pay ${formatPrice(grandTotal)} Now`}
+              {/* Cards */}
+              <label className={`p-3 rounded-2xl border-2 cursor-pointer transition flex items-start gap-2.5 ${
+                formData.paymentMethod === 'card' ? 'border-brand-500 bg-brand-50/40' : 'border-stone-200'
+              }`}>
+                <input
+                  type="radio"
+                  name="pm"
+                  value="card"
+                  checked={formData.paymentMethod === 'card'}
+                  onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
+                  className="mt-1"
+                />
+                <div className="flex-1">
+                  <span className="font-bold text-xs text-stone-900 flex items-center gap-1.5">
+                    <CreditCard className="w-3.5 h-3.5 text-blue-600" />
+                    Debit / Credit Cards (RuPay, Visa, MasterCard)
                   </span>
-                </>
-              )}
-            </button>
+                </div>
+              </label>
+            </div>
+
+            {/* Total and Order Button */}
+            <div className="pt-2 border-t border-stone-200 space-y-2">
+              <div className="flex justify-between text-xs font-bold text-stone-900">
+                <span>Total Amount:</span>
+                <span className="text-brand-700 text-sm">{formatPrice(grandTotal)}</span>
+              </div>
+
+              <button
+                onClick={handleCompleteOrder}
+                disabled={isProcessingPayment}
+                className="w-full py-3.5 rounded-2xl bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-stone-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition active:scale-98"
+              >
+                {isProcessingPayment ? (
+                  <span>Processing...</span>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Confirm Order ({formatPrice(grandTotal)})</span>
+                  </>
+                )}
+              </button>
+            </div>
 
           </div>
         )}
 
-        {/* Step 3: Success Confirmation */}
+        {/* Step 3: Success Screen */}
         {step === 3 && confirmedOrder && (
-          <div className="p-8 text-center space-y-5">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-md">
-              <CheckCircle2 className="w-9 h-9" />
+          <div className="p-6 text-center space-y-4">
+            <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-7 h-7" />
             </div>
 
             <div>
-              <h3 className="font-serif text-2xl font-bold text-stone-900">
-                Thank you, {confirmedOrder.customer.name.split(' ')[0]}!
+              <h3 className="font-serif text-xl font-bold text-stone-900">
+                Order Placed Successfully!
               </h3>
-              <p className="text-xs text-stone-500 mt-1">
-                Your order has been placed successfully at <strong className="text-stone-800">shivaycollections.com</strong>
+              <p className="text-xs text-stone-500">
+                Shivay Collections, Barwar Kheri has received your order.
               </p>
             </div>
 
-            {/* Order Card info */}
-            <div className="p-5 rounded-2xl bg-stone-50 border border-stone-200 max-w-md mx-auto text-left text-xs space-y-2.5">
-              <div className="flex justify-between items-center pb-2 border-b border-stone-200">
+            <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 text-xs text-left max-w-sm mx-auto space-y-1.5">
+              <div className="flex justify-between">
                 <span className="text-stone-500">Order ID:</span>
-                <span className="font-mono font-bold text-stone-900 bg-stone-200 px-2 py-0.5 rounded">
-                  {confirmedOrder.id}
-                </span>
+                <span className="font-mono font-bold text-stone-900">{confirmedOrder.id}</span>
               </div>
-
               <div className="flex justify-between">
-                <span className="text-stone-500">Payment Status:</span>
-                <span className="font-bold text-emerald-700">{confirmedOrder.paymentMethod}</span>
+                <span className="text-stone-500">Payment:</span>
+                <span className="font-bold text-stone-800">{confirmedOrder.paymentMethod}</span>
               </div>
-
-              <div className="flex justify-between">
-                <span className="text-stone-500">Estimated Delivery:</span>
-                <span className="font-semibold text-stone-800">
-                  {new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
-                </span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="text-stone-500">Delivery Address:</span>
-                <span className="font-medium text-stone-800 text-right max-w-[200px] truncate">
-                  {confirmedOrder.customer.address}
-                </span>
-              </div>
-
-              <div className="flex justify-between pt-2 border-t border-stone-200 font-bold text-stone-900">
-                <span>Total Paid:</span>
-                <span className="text-brand-700 text-sm">{formatPrice(confirmedOrder.total)}</span>
+              <div className="flex justify-between font-bold text-stone-900 pt-1 border-t border-stone-200">
+                <span>Total:</span>
+                <span className="text-brand-700">{formatPrice(confirmedOrder.total)}</span>
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+            <div className="pt-2 flex flex-col sm:flex-row gap-2 justify-center">
               <button
-                onClick={() => {
-                  setIsCheckoutOpen(false);
-                  setStep(1);
-                }}
-                className="px-6 py-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs transition"
+                onClick={() => { setIsCheckoutOpen(false); setStep(1); }}
+                className="px-5 py-2.5 rounded-xl bg-stone-900 text-white font-bold text-xs"
               >
                 Continue Shopping
               </button>
-
               <button
                 onClick={() => {
-                  const msg = encodeURIComponent(`Hi Shivay Collections! I have placed order ${confirmedOrder.id} for ${formatPrice(confirmedOrder.total)}.`);
+                  const msg = encodeURIComponent(`Namaste Shivay Collections! I placed order ${confirmedOrder.id}.`);
                   window.open(`https://wa.me/919876543210?text=${msg}`, '_blank');
                 }}
-                className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition"
+                className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-1"
               >
-                <span>WhatsApp Order Updates</span>
-                <ExternalLink className="w-3.5 h-3.5" />
+                <span>WhatsApp Updates</span>
+                <ExternalLink className="w-3 h-3" />
               </button>
             </div>
-
           </div>
         )}
 

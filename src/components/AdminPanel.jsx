@@ -53,7 +53,7 @@ export const AdminPanel = () => {
   const [newPinInput, setNewPinInput] = useState('');
   const [showPinModal, setShowPinModal] = useState(false);
 
-  // Dashboard Sub-navigation: 'catalogue', 'add-product', 'orders-verification', 'settings'
+  // Dashboard Sub-navigation: 'catalogue', 'add-product', 'orders-verification'
   const [currentTab, setCurrentTab] = useState('catalogue');
   const [searchCatalog, setSearchCatalog] = useState('');
   const [orderSearch, setOrderSearch] = useState('');
@@ -196,29 +196,28 @@ export const AdminPanel = () => {
     setCurrentTab('catalogue');
   };
 
-  // Metrics
   const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
   const pendingOrders = orders.filter(o => o.status === 'Pending Verification');
 
-  // IF NOT AUTHENTICATED: SHOW OWNER LOGIN GATE
+  // IF NOT AUTHENTICATED: SHOW OWNER LOGIN GATE (NO PIN EXPOSED!)
   if (!isOwnerAuthenticated) {
     return (
-      <div className="max-w-md mx-auto my-16 px-4">
-        <div className="bg-white rounded-3xl shadow-xl border border-stone-200/90 p-8 text-center space-y-6">
+      <div className="w-full max-w-sm mx-auto my-12 sm:my-20 px-4">
+        <div className="bg-white rounded-3xl shadow-xl border border-stone-200/90 p-6 sm:p-8 text-center space-y-6">
           
-          <div className="relative mx-auto w-24 h-24 rounded-full overflow-hidden border-4 border-brand-400 shadow-md">
+          <div className="relative mx-auto w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-4 border-brand-400 shadow-md">
             <img src="/logo.jpg" alt="Shivay Collections" className="w-full h-full object-cover" />
           </div>
 
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200">
               Barwar Kheri Store
             </span>
-            <h2 className="font-serif text-2xl font-black text-stone-900 mt-2">
-              Owner Dashboard Login
+            <h2 className="font-serif text-xl sm:text-2xl font-black text-stone-900 mt-2">
+              Owner Portal Login
             </h2>
             <p className="text-xs text-stone-500 mt-1">
-              Please enter your 4-digit Owner PIN to manage products, catalog, and order verifications.
+              Enter your private Security PIN to access the product catalog and order verification.
             </p>
           </div>
 
@@ -229,30 +228,29 @@ export const AdminPanel = () => {
                 maxLength={6}
                 value={enteredPin}
                 onChange={(e) => { setEnteredPin(e.target.value); setPinError(false); }}
-                placeholder="Enter Owner PIN (Default: 8888)"
-                className="w-full text-center tracking-widest text-lg font-bold py-3 px-4 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-stone-50"
+                placeholder="Enter 4-Digit Security PIN"
+                className="w-full text-center tracking-[0.3em] text-lg font-bold py-3 px-4 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-stone-50"
                 autoFocus
               />
               <KeyRound className="w-4 h-4 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
             </div>
 
             {pinError && (
-              <p className="text-xs text-rose-600 font-semibold">
-                Incorrect PIN. Default is 8888.
+              <p className="text-xs text-rose-600 font-semibold animate-pulse">
+                Incorrect PIN. Access restricted to store owner.
               </p>
             )}
 
             <button
               type="submit"
-              className="w-full py-3.5 rounded-xl bg-stone-900 hover:bg-brand-600 text-white font-bold text-xs uppercase tracking-wider transition shadow-md"
+              className="w-full py-3.5 rounded-xl bg-stone-900 hover:bg-brand-600 text-white font-bold text-xs uppercase tracking-wider transition shadow-md active:scale-98"
             >
-              Verify & Enter Dashboard
+              Unlock Dashboard
             </button>
           </form>
 
-          <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-400">
+          <div className="pt-2 border-t border-stone-100 flex items-center justify-center text-[11px] text-stone-400">
             <span>Official: shivaycollections.com</span>
-            <span className="font-mono bg-stone-100 px-2 py-0.5 rounded text-stone-600">Default PIN: 8888</span>
           </div>
 
         </div>
@@ -262,30 +260,30 @@ export const AdminPanel = () => {
 
   // AUTHENTICATED OWNER DASHBOARD
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fadeIn">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-fadeIn">
       
       {/* Top Banner with Store Logo & Owner Controls */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-stone-900 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-brand-400/80 shadow-md shrink-0 bg-white">
+      <div className="p-5 sm:p-7 rounded-3xl bg-stone-900 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-5">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden border-2 border-brand-400/80 shadow-md shrink-0 bg-white">
             <img src="/logo.jpg" alt="Shivay Collections Logo" className="w-full h-full object-cover" />
           </div>
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="bg-brand-500/20 text-brand-300 border border-brand-400/30 text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1">
+            <div className="flex flex-wrap items-center gap-1.5 mb-1">
+              <span className="bg-brand-500/20 text-brand-300 border border-brand-400/30 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full flex items-center gap-1">
                 <ShieldCheck className="w-3 h-3 text-brand-400" />
-                Verified Owner Portal
+                Owner Portal
               </span>
-              <span className="text-xs text-stone-400 flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-rose-400" />
+              <span className="text-[11px] text-stone-400 flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-rose-400" />
                 Barwar Kheri
               </span>
             </div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-black text-white">
+            <h1 className="font-serif text-xl sm:text-2xl font-black text-white">
               Shivay Collections Dashboard
             </h1>
-            <p className="text-xs text-stone-400">
-              Domain: <span className="text-brand-300 font-mono">shivaycollections.com</span> • Full Catalogue & Verification Control
+            <p className="text-[11px] text-stone-400">
+              Domain: <span className="text-brand-300 font-mono">shivaycollections.com</span>
             </p>
           </div>
         </div>
@@ -294,15 +292,15 @@ export const AdminPanel = () => {
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setActiveTab('store')}
-            className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur transition flex items-center gap-1.5"
+            className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur transition flex items-center justify-center gap-1.5"
           >
             <Globe className="w-3.5 h-3.5" />
-            <span>View Live Store</span>
+            <span>Storefront</span>
           </button>
 
           <button
             onClick={() => setShowPinModal(true)}
-            className="px-4 py-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-semibold border border-stone-700 transition flex items-center gap-1.5"
+            className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-semibold border border-stone-700 transition flex items-center justify-center gap-1.5"
             title="Change Owner PIN"
           >
             <KeyRound className="w-3.5 h-3.5 text-brand-400" />
@@ -311,101 +309,101 @@ export const AdminPanel = () => {
 
           <button
             onClick={logoutOwner}
-            className="px-4 py-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900 border border-rose-800/60 text-rose-200 text-xs font-semibold transition flex items-center gap-1.5"
+            className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900 border border-rose-800/60 text-rose-200 text-xs font-semibold transition flex items-center justify-center gap-1.5"
           >
             <Lock className="w-3.5 h-3.5" />
-            <span>Lock Dashboard</span>
+            <span>Lock</span>
           </button>
         </div>
       </div>
 
       {/* Metrics Highlights */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         
-        <div className="p-5 rounded-2xl bg-white border border-stone-200/90 shadow-sm">
-          <div className="flex items-center justify-between text-stone-500 mb-1.5">
-            <span className="text-xs font-semibold uppercase">Active Products</span>
-            <div className="p-2 rounded-lg bg-amber-50 text-amber-700">
-              <ShoppingBag className="w-4 h-4" />
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/90 shadow-sm">
+          <div className="flex items-center justify-between text-stone-500 mb-1">
+            <span className="text-[11px] font-semibold uppercase">Active Items</span>
+            <div className="p-1.5 rounded-lg bg-amber-50 text-amber-700">
+              <ShoppingBag className="w-3.5 h-3.5" />
             </div>
           </div>
-          <p className="text-2xl font-black text-stone-900">{products.length}</p>
-          <p className="text-[11px] text-stone-500 mt-1">In store catalogue</p>
+          <p className="text-xl sm:text-2xl font-black text-stone-900">{products.length}</p>
+          <p className="text-[10px] text-stone-500 mt-0.5">In catalogue</p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white border border-stone-200/90 shadow-sm">
-          <div className="flex items-center justify-between text-stone-500 mb-1.5">
-            <span className="text-xs font-semibold uppercase">Total Orders</span>
-            <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
-              <Package className="w-4 h-4" />
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/90 shadow-sm">
+          <div className="flex items-center justify-between text-stone-500 mb-1">
+            <span className="text-[11px] font-semibold uppercase">Total Orders</span>
+            <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600">
+              <Package className="w-3.5 h-3.5" />
             </div>
           </div>
-          <p className="text-2xl font-black text-stone-900">{orders.length}</p>
-          <p className="text-[11px] text-stone-500 mt-1">Customer orders</p>
+          <p className="text-xl sm:text-2xl font-black text-stone-900">{orders.length}</p>
+          <p className="text-[10px] text-stone-500 mt-0.5">Customer orders</p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white border border-stone-200/90 shadow-sm">
-          <div className="flex items-center justify-between text-stone-500 mb-1.5">
-            <span className="text-xs font-semibold uppercase">Pending Verification</span>
-            <div className="p-2 rounded-lg bg-rose-50 text-rose-600">
-              <Clock className="w-4 h-4" />
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/90 shadow-sm">
+          <div className="flex items-center justify-between text-stone-500 mb-1">
+            <span className="text-[11px] font-semibold uppercase">Pending</span>
+            <div className="p-1.5 rounded-lg bg-rose-50 text-rose-600">
+              <Clock className="w-3.5 h-3.5" />
             </div>
           </div>
-          <p className="text-2xl font-black text-rose-600">{pendingOrders.length}</p>
-          <p className="text-[11px] text-stone-500 mt-1">Requires your check</p>
+          <p className="text-xl sm:text-2xl font-black text-rose-600">{pendingOrders.length}</p>
+          <p className="text-[10px] text-stone-500 mt-0.5">Needs check</p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white border border-stone-200/90 shadow-sm">
-          <div className="flex items-center justify-between text-stone-500 mb-1.5">
-            <span className="text-xs font-semibold uppercase">Order Revenue</span>
-            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
-              <TrendingUp className="w-4 h-4" />
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/90 shadow-sm">
+          <div className="flex items-center justify-between text-stone-500 mb-1">
+            <span className="text-[11px] font-semibold uppercase">Sales Value</span>
+            <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
+              <TrendingUp className="w-3.5 h-3.5" />
             </div>
           </div>
-          <p className="text-2xl font-black text-stone-900">{formatPrice(totalRevenue)}</p>
-          <p className="text-[11px] text-emerald-600 font-medium mt-1">Total value</p>
+          <p className="text-xl sm:text-2xl font-black text-stone-900">{formatPrice(totalRevenue)}</p>
+          <p className="text-[10px] text-emerald-600 font-medium mt-0.5">Orders total</p>
         </div>
 
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="flex border-b border-stone-200 gap-6 text-sm font-semibold">
+      {/* Responsive Navigation Tabs */}
+      <div className="flex border-b border-stone-200 gap-3 sm:gap-6 text-xs sm:text-sm font-semibold overflow-x-auto pb-1 scrollbar-none">
         <button
           onClick={() => { setCurrentTab('catalogue'); setEditingProduct(null); }}
-          className={`pb-3 relative transition flex items-center gap-2 ${
+          className={`pb-2.5 sm:pb-3 relative transition flex items-center gap-1.5 shrink-0 ${
             currentTab === 'catalogue'
               ? 'text-brand-700 after:content-[""] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-brand-500'
               : 'text-stone-500 hover:text-stone-800'
           }`}
         >
           <ShoppingBag className="w-4 h-4" />
-          <span>Product Catalogue ({products.length})</span>
+          <span>Catalogue ({products.length})</span>
         </button>
 
         <button
           onClick={() => { setCurrentTab('add-product'); }}
-          className={`pb-3 relative transition flex items-center gap-2 ${
+          className={`pb-2.5 sm:pb-3 relative transition flex items-center gap-1.5 shrink-0 ${
             currentTab === 'add-product'
               ? 'text-brand-700 after:content-[""] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-brand-500'
               : 'text-stone-500 hover:text-stone-800'
           }`}
         >
           <Plus className="w-4 h-4" />
-          <span>{editingProduct ? 'Edit Product' : '+ Add New Product'}</span>
+          <span>{editingProduct ? 'Edit Product' : '+ Add Product'}</span>
         </button>
 
         <button
           onClick={() => setCurrentTab('orders-verification')}
-          className={`pb-3 relative transition flex items-center gap-2 ${
+          className={`pb-2.5 sm:pb-3 relative transition flex items-center gap-1.5 shrink-0 ${
             currentTab === 'orders-verification'
               ? 'text-brand-700 after:content-[""] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-brand-500'
               : 'text-stone-500 hover:text-stone-800'
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
-          <span>Orders & Verification Center ({orders.length})</span>
+          <span>Orders & Verification ({orders.length})</span>
           {pendingOrders.length > 0 && (
-            <span className="w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center">
+            <span className="w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center">
               {pendingOrders.length}
             </span>
           )}
@@ -413,7 +411,7 @@ export const AdminPanel = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* TAB 1: CATALOGUE VIEW (View, Edit, Delete Products) */}
+      {/* TAB 1: CATALOGUE VIEW */}
       {/* ========================================================================= */}
       {currentTab === 'catalogue' && (
         <div className="space-y-4">
@@ -425,7 +423,7 @@ export const AdminPanel = () => {
                 value={searchCatalog}
                 onChange={(e) => setSearchCatalog(e.target.value)}
                 placeholder="Search products in your catalogue..."
-                className="w-full pl-9 pr-3 py-2.5 text-xs rounded-xl border border-stone-200 bg-white"
+                className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-stone-200 bg-white"
               />
               <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </div>
@@ -435,41 +433,40 @@ export const AdminPanel = () => {
                 setEditingProduct(null);
                 setCurrentTab('add-product');
               }}
-              className="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-brand-600 text-white text-xs font-bold flex items-center justify-center gap-2 transition shadow-md"
+              className="px-4 py-2 rounded-xl bg-stone-900 hover:bg-brand-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition shadow-sm"
             >
-              <Plus className="w-4 h-4 text-brand-300" />
-              <span>Add First Product</span>
+              <Plus className="w-3.5 h-3.5 text-brand-300" />
+              <span>Add Product</span>
             </button>
           </div>
 
           {products.length === 0 ? (
-            <div className="p-12 text-center bg-white rounded-3xl border border-stone-200 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-brand-50 flex items-center justify-center mx-auto text-brand-500">
-                <ShoppingBag className="w-8 h-8" />
+            <div className="p-8 sm:p-12 text-center bg-white rounded-3xl border border-stone-200 space-y-4">
+              <div className="w-14 h-14 rounded-full bg-brand-50 flex items-center justify-center mx-auto text-brand-500">
+                <ShoppingBag className="w-7 h-7" />
               </div>
-              <h3 className="font-serif text-lg font-bold text-stone-900">Your Catalogue is Ready & Clean</h3>
-              <p className="text-xs text-stone-500 max-w-md mx-auto leading-relaxed">
-                All dummy product and dummy payment records have been deleted. You can now add your genuine stock (sarees, kurtas, suits, kids wear, serums, lipsticks) directly into Shivay Collections!
+              <h3 className="font-serif text-lg font-bold text-stone-900">Your Catalogue is Ready</h3>
+              <p className="text-xs text-stone-500 max-w-sm mx-auto leading-relaxed">
+                Add genuine clothes (men, women, kids) and cosmetics directly into Shivay Collections, Barwar Kheri!
               </p>
               <button
                 onClick={() => { setEditingProduct(null); setCurrentTab('add-product'); }}
-                className="px-6 py-3 rounded-full bg-brand-500 hover:bg-brand-400 text-stone-950 font-bold text-xs transition shadow-lg"
+                className="px-6 py-2.5 rounded-full bg-brand-500 hover:bg-brand-400 text-stone-950 font-bold text-xs transition shadow-md"
               >
-                + Add Your First Product Now
+                + Add Your First Product
               </button>
             </div>
           ) : (
             <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs min-w-[600px]">
                   <thead className="bg-stone-50 border-b border-stone-200 text-stone-500 uppercase tracking-wider font-semibold">
                     <tr>
-                      <th className="py-3.5 px-4">Item</th>
-                      <th className="py-3.5 px-4">Department</th>
-                      <th className="py-3.5 px-4">Price / MRP</th>
-                      <th className="py-3.5 px-4">Stock</th>
-                      <th className="py-3.5 px-4">Sizes / Options</th>
-                      <th className="py-3.5 px-4 text-right">Actions</th>
+                      <th className="py-3 px-4">Item</th>
+                      <th className="py-3 px-4">Category</th>
+                      <th className="py-3 px-4">Price</th>
+                      <th className="py-3 px-4">Stock</th>
+                      <th className="py-3 px-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-100">
@@ -478,15 +475,15 @@ export const AdminPanel = () => {
                       .map((p) => (
                         <tr key={p.id} className="hover:bg-stone-50/80 transition">
                           
-                          <td className="py-3 px-4 flex items-center gap-3">
+                          <td className="py-3 px-4 flex items-center gap-2.5">
                             <img 
                               src={p.images && p.images[0] ? p.images[0] : '/logo.jpg'} 
                               alt={p.name} 
-                              className="w-12 h-14 object-cover rounded-lg bg-stone-100 shrink-0 border border-stone-200" 
+                              className="w-10 h-12 object-cover rounded-lg bg-stone-100 shrink-0 border border-stone-200" 
                             />
                             <div>
                               <p className="font-bold text-stone-900 line-clamp-1">{p.name}</p>
-                              <span className="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded font-semibold uppercase">
+                              <span className="text-[10px] text-brand-700 bg-brand-50 px-1.5 py-0.5 rounded font-semibold uppercase">
                                 {p.subcategory || p.category}
                               </span>
                             </div>
@@ -497,11 +494,11 @@ export const AdminPanel = () => {
                           </td>
 
                           <td className="py-3 px-4">
-                            <span className="font-bold text-stone-900 text-sm block">
+                            <span className="font-bold text-stone-900 block">
                               {formatPrice(p.price)}
                             </span>
                             {p.originalPrice > p.price && (
-                              <span className="text-[11px] text-stone-400 line-through">
+                              <span className="text-[10px] text-stone-400 line-through">
                                 {formatPrice(p.originalPrice)}
                               </span>
                             )}
@@ -515,18 +512,14 @@ export const AdminPanel = () => {
                             </span>
                           </td>
 
-                          <td className="py-3 px-4 text-stone-500">
-                            {Array.isArray(p.sizes) ? p.sizes.slice(0, 3).join(', ') : p.sizes}
-                          </td>
-
                           <td className="py-3 px-4 text-right">
                             <div className="flex items-center justify-end gap-1">
                               <button
                                 onClick={() => startEditProduct(p)}
-                                className="p-2 text-stone-600 hover:text-brand-700 hover:bg-stone-100 rounded-lg transition"
+                                className="p-1.5 text-stone-600 hover:text-brand-700 hover:bg-stone-100 rounded-lg transition"
                                 title="Edit Product"
                               >
-                                <Edit className="w-4 h-4" />
+                                <Edit className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => {
@@ -534,10 +527,10 @@ export const AdminPanel = () => {
                                     deleteProduct(p.id);
                                   }
                                 }}
-                                className="p-2 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                                className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
                                 title="Delete Product"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           </td>
@@ -557,15 +550,15 @@ export const AdminPanel = () => {
       {/* TAB 2: ADD / EDIT PRODUCT FORM */}
       {/* ========================================================================= */}
       {currentTab === 'add-product' && (
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-stone-200/90 shadow-sm max-w-3xl mx-auto space-y-6">
+        <div className="bg-white p-5 sm:p-7 rounded-3xl border border-stone-200/90 shadow-sm max-w-2xl mx-auto space-y-5">
           
-          <div className="flex items-center justify-between pb-4 border-b border-stone-200">
+          <div className="flex items-center justify-between pb-3 border-b border-stone-200">
             <div>
-              <h2 className="font-serif text-xl font-bold text-stone-900">
-                {editingProduct ? `Edit Product: ${editingProduct.name}` : 'Add New Item to Catalogue'}
+              <h2 className="font-serif text-lg sm:text-xl font-bold text-stone-900">
+                {editingProduct ? `Edit: ${editingProduct.name}` : 'Add New Item to Catalogue'}
               </h2>
-              <p className="text-xs text-stone-500">
-                Photos, prices, and stock updates go live instantly on shivaycollections.com
+              <p className="text-[11px] text-stone-500">
+                Updates appear live on shivaycollections.com
               </p>
             </div>
             
@@ -573,7 +566,7 @@ export const AdminPanel = () => {
               onClick={() => { setEditingProduct(null); setCurrentTab('catalogue'); }}
               className="text-xs text-stone-500 hover:text-stone-800 font-semibold"
             >
-              ← Back to Catalogue
+              ← Back
             </button>
           </div>
 
@@ -586,42 +579,42 @@ export const AdminPanel = () => {
                 type="text"
                 value={productForm.name}
                 onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                placeholder="e.g. Pure Banarasi Silk Saree or 24K Gold Facial Serum"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-400 text-sm font-medium"
+                placeholder="e.g. Pure Silk Kurta Set or 24K Gold Serum"
+                className="w-full px-3 py-2 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-400 text-xs font-medium"
                 required
               />
             </div>
 
             {/* Department & Subcategory */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block font-bold text-stone-700 mb-1">Department / Category *</label>
+                <label className="block font-bold text-stone-700 mb-1">Department *</label>
                 <select
                   value={productForm.category}
                   onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 bg-white font-medium"
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-white font-medium"
                 >
-                  <option value="women">Women's Wear (Sarees, Kurtis, Suits, Dresses)</option>
-                  <option value="men">Men's Collection (Kurtas, Shirts, Polos, Chinos)</option>
-                  <option value="kids">Kids & Teens (Boys, Girls, Rompers)</option>
-                  <option value="cosmetics">Cosmetics & Beauty (Skincare, Perfumes, Lipsticks)</option>
+                  <option value="women">Women's Wear (Sarees, Kurtis, Suits)</option>
+                  <option value="men">Men's Collection (Kurtas, Shirts, Polos)</option>
+                  <option value="kids">Kids & Teens (All Age Groups)</option>
+                  <option value="cosmetics">Cosmetics & Beauty (Skincare, Perfumes)</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-bold text-stone-700 mb-1">Subcategory / Style Tag *</label>
+                <label className="block font-bold text-stone-700 mb-1">Subcategory / Style *</label>
                 <input
                   type="text"
                   value={productForm.subcategory}
                   onChange={(e) => setProductForm({ ...productForm, subcategory: e.target.value })}
-                  placeholder="e.g. Sarees, Kurtas, Gowns, Lipsticks, Serums"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200"
+                  placeholder="e.g. Sarees, Kurtas, Gowns, Lipsticks"
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200"
                 />
               </div>
             </div>
 
             {/* Pricing & Stock */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label className="block font-bold text-stone-700 mb-1">Selling Price (₹) *</label>
                 <input
@@ -629,50 +622,50 @@ export const AdminPanel = () => {
                   value={productForm.price}
                   onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
                   placeholder="e.g. 1999"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 font-bold"
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200 font-bold"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-stone-700 mb-1">MRP / Original Price (₹)</label>
+                <label className="block font-bold text-stone-700 mb-1">MRP / Original (₹)</label>
                 <input
                   type="number"
                   value={productForm.originalPrice}
                   onChange={(e) => setProductForm({ ...productForm, originalPrice: e.target.value })}
                   placeholder="e.g. 3999"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200"
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-stone-700 mb-1">Available Quantity in Stock</label>
+                <label className="block font-bold text-stone-700 mb-1">Stock Quantity</label>
                 <input
                   type="number"
                   value={productForm.stockCount}
                   onChange={(e) => setProductForm({ ...productForm, stockCount: e.target.value })}
-                  placeholder="e.g. 25"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200"
+                  placeholder="e.g. 20"
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200"
                 />
               </div>
             </div>
 
             {/* Image Upload / URL */}
-            <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+            <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-2.5">
               <label className="block font-bold text-stone-800">
-                Product Image (Upload from phone/laptop OR paste web link)
+                Product Photo (Upload or Paste Link)
               </label>
 
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                <div className="w-24 h-28 rounded-xl overflow-hidden border border-stone-300 bg-white shrink-0 shadow-inner">
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <div className="w-20 h-24 rounded-xl overflow-hidden border border-stone-300 bg-white shrink-0 shadow-inner">
                   <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                 </div>
 
                 <div className="space-y-2 flex-1 w-full">
                   <div className="flex items-center gap-2">
-                    <label className="cursor-pointer px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold flex items-center gap-2">
+                    <label className="cursor-pointer px-3.5 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold flex items-center gap-1.5 text-xs">
                       <Upload className="w-3.5 h-3.5 text-brand-300" />
-                      <span>Choose Image File</span>
+                      <span>Choose File</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -680,7 +673,7 @@ export const AdminPanel = () => {
                         className="hidden"
                       />
                     </label>
-                    <span className="text-stone-400 text-[11px]">JPG, PNG, WebP supported</span>
+                    <span className="text-stone-400 text-[10px]">Camera / Gallery photos supported</span>
                   </div>
 
                   <input
@@ -690,75 +683,64 @@ export const AdminPanel = () => {
                       setImagePreview(e.target.value);
                       setProductForm({ ...productForm, images: [e.target.value] });
                     }}
-                    placeholder="Or paste external image URL: https://..."
-                    className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-white text-xs"
+                    placeholder="Or paste image URL: https://..."
+                    className="w-full px-3 py-1.5 rounded-xl border border-stone-200 bg-white text-xs"
                   />
                 </div>
               </div>
             </div>
 
             {/* Sizes & Colors */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block font-bold text-stone-700 mb-1">Available Sizes (comma separated)</label>
+                <label className="block font-bold text-stone-700 mb-1">Sizes (comma separated)</label>
                 <input
                   type="text"
                   value={productForm.sizes}
                   onChange={(e) => setProductForm({ ...productForm, sizes: e.target.value })}
-                  placeholder="S, M, L, XL, XXL or 30ml, 50ml, Free Size"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200"
+                  placeholder="S, M, L, XL or Free Size"
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-stone-700 mb-1">Colors / Shades (comma separated)</label>
+                <label className="block font-bold text-stone-700 mb-1">Colors (comma separated)</label>
                 <input
                   type="text"
                   value={productForm.colorNames}
                   onChange={(e) => setProductForm({ ...productForm, colorNames: e.target.value })}
-                  placeholder="Red, Royal Blue, Gold, Peach"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200"
+                  placeholder="Red, Blue, Gold"
+                  className="w-full px-3 py-2 rounded-xl border border-stone-200"
                 />
               </div>
             </div>
 
-            {/* Description & Features */}
+            {/* Description */}
             <div>
               <label className="block font-bold text-stone-700 mb-1">Description</label>
               <textarea
-                rows={3}
+                rows={2}
                 value={productForm.description}
                 onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
-                placeholder="Product material, weaving, fabric feel, occasions, washing instructions..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200"
+                placeholder="Product fabric, details, occasion..."
+                className="w-full px-3 py-2 rounded-xl border border-stone-200"
               />
             </div>
 
-            <div>
-              <label className="block font-bold text-stone-700 mb-1">Highlights (comma separated)</label>
-              <input
-                type="text"
-                value={productForm.features}
-                onChange={(e) => setProductForm({ ...productForm, features: e.target.value })}
-                placeholder="100% Handcrafted, Breathable Fabric, Fast Delivery"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200"
-              />
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-stone-200">
+            {/* Actions */}
+            <div className="flex justify-end gap-2 pt-3 border-t border-stone-200">
               <button
                 type="button"
                 onClick={() => { setEditingProduct(null); setCurrentTab('catalogue'); }}
-                className="px-5 py-2.5 rounded-xl border border-stone-200 text-stone-700 font-bold hover:bg-stone-50"
+                className="px-4 py-2 rounded-xl border border-stone-200 text-stone-700 font-bold"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-6 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-stone-950 font-black text-xs transition shadow-md"
+                className="px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-stone-950 font-black text-xs transition shadow-sm"
               >
-                {editingProduct ? 'Save Changes' : 'Publish Product to Store'}
+                {editingProduct ? 'Save Changes' : 'Publish Product'}
               </button>
             </div>
 
@@ -778,8 +760,8 @@ export const AdminPanel = () => {
                 type="text"
                 value={orderSearch}
                 onChange={(e) => setOrderSearch(e.target.value)}
-                placeholder="Search orders by customer name, phone, or ID..."
-                className="w-full pl-9 pr-3 py-2.5 text-xs rounded-xl border border-stone-200 bg-white"
+                placeholder="Search orders..."
+                className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-stone-200 bg-white"
               />
               <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </div>
@@ -787,25 +769,23 @@ export const AdminPanel = () => {
             {orders.length > 0 && (
               <button
                 onClick={() => {
-                  if (confirm('Are you sure you want to delete all order history?')) {
-                    clearAllOrders();
-                  }
+                  if (confirm('Clear all order records?')) clearAllOrders();
                 }}
                 className="text-xs text-rose-600 hover:text-rose-800 font-semibold self-end sm:self-auto"
               >
-                Clear All Orders
+                Clear All
               </button>
             )}
           </div>
 
           {orders.length === 0 ? (
-            <div className="p-12 text-center bg-white rounded-3xl border border-stone-200 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center mx-auto text-stone-400">
-                <CheckCircle2 className="w-8 h-8" />
+            <div className="p-8 sm:p-12 text-center bg-white rounded-3xl border border-stone-200 space-y-3">
+              <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center mx-auto text-stone-400">
+                <CheckCircle2 className="w-6 h-6" />
               </div>
-              <h3 className="font-serif text-lg font-bold text-stone-900">Zero Pending Orders</h3>
-              <p className="text-xs text-stone-500 max-w-sm mx-auto">
-                All dummy order records have been purged. Real incoming customer orders from shivaycollections.com will appear here for verification.
+              <h3 className="font-serif text-base sm:text-lg font-bold text-stone-900">Zero Orders Yet</h3>
+              <p className="text-xs text-stone-500 max-w-xs mx-auto">
+                Customer orders placed on shivaycollections.com will appear here for verification.
               </p>
             </div>
           ) : (
@@ -824,16 +804,15 @@ export const AdminPanel = () => {
                   return (
                     <div 
                       key={ord.id}
-                      className="p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-5"
+                      className="p-5 sm:p-6 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-4"
                     >
-                      {/* Top Header of Order */}
-                      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-stone-100">
-                        <div className="flex items-center gap-3">
-                          <span className="font-mono font-bold text-sm bg-stone-900 text-brand-300 px-3 py-1 rounded-xl">
+                      <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-stone-100">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-xs bg-stone-900 text-brand-300 px-2.5 py-1 rounded-lg">
                             {ord.id}
                           </span>
-                          <span className="text-xs text-stone-500">{ord.date}</span>
-                          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                          <span className="text-[11px] text-stone-500">{ord.date}</span>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                             ord.status.includes('Verified') || ord.status === 'Delivered'
                               ? 'bg-emerald-100 text-emerald-800'
                               : 'bg-amber-100 text-amber-800'
@@ -842,20 +821,19 @@ export const AdminPanel = () => {
                           </span>
                         </div>
 
-                        {/* Order Verification Quick Button */}
                         <div className="flex items-center gap-2">
                           {!isVerified ? (
                             <button
                               onClick={() => markOrderFullyVerified(ord.id)}
-                              className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition"
+                              className="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition"
                             >
                               <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>Verify & Confirm Order</span>
+                              <span>Verify & Confirm</span>
                             </button>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 border border-emerald-200 text-xs font-bold px-3 py-1 rounded-xl">
-                              <Check className="w-3.5 h-3.5" />
-                              <span>Order Verified by Owner</span>
+                            <span className="text-emerald-700 bg-emerald-50 text-[11px] font-bold px-2.5 py-0.5 rounded-lg border border-emerald-200 flex items-center gap-1">
+                              <Check className="w-3 h-3" />
+                              <span>Verified</span>
                             </span>
                           )}
 
@@ -863,124 +841,84 @@ export const AdminPanel = () => {
                             onClick={() => {
                               if (confirm(`Delete order ${ord.id}?`)) deleteOrder(ord.id);
                             }}
-                            className="p-1.5 text-stone-400 hover:text-rose-600 rounded"
-                            title="Delete Order"
+                            className="p-1 text-stone-400 hover:text-rose-600 rounded"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>
 
-                      {/* 3-Column Verification & Details */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
-                        
-                        {/* Customer & Delivery Verification */}
-                        <div className="space-y-2 bg-stone-50 p-4 rounded-2xl border border-stone-100">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div className="space-y-1.5 bg-stone-50 p-3.5 rounded-2xl border border-stone-100">
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-stone-900 uppercase tracking-wide">Customer Details</span>
+                            <span className="font-bold text-stone-900 uppercase text-[10px]">Customer</span>
                             <button
                               onClick={() => verifyCustomerAddress(ord.id, !isAddressVerified)}
-                              className={`px-2 py-0.5 rounded text-[10px] font-bold transition ${
-                                isAddressVerified
-                                  ? 'bg-emerald-100 text-emerald-800'
-                                  : 'bg-stone-200 text-stone-700 hover:bg-emerald-50'
+                              className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                                isAddressVerified ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-200 text-stone-700'
                               }`}
                             >
-                              {isAddressVerified ? '✓ Address Verified' : 'Verify Address'}
+                              {isAddressVerified ? '✓ Verified' : 'Verify'}
                             </button>
                           </div>
-                          <p className="font-bold text-stone-900 text-sm">{ord.customer.name}</p>
-                          <p className="text-stone-600 flex items-center gap-1">
-                            <Phone className="w-3 h-3 text-stone-400" />
-                            <span>{ord.customer.phone}</span>
-                          </p>
-                          <p className="text-stone-600 leading-snug flex items-start gap-1">
-                            <MapPin className="w-3 h-3 text-stone-400 shrink-0 mt-0.5" />
-                            <span>{ord.customer.address}</span>
-                          </p>
+                          <p className="font-bold text-stone-900">{ord.customer.name}</p>
+                          <p className="text-stone-600">{ord.customer.phone}</p>
+                          <p className="text-stone-500 text-[11px]">{ord.customer.address}</p>
 
-                          {/* WhatsApp Customer Button */}
-                          <div className="pt-2">
-                            <button
-                              onClick={() => {
-                                const msg = encodeURIComponent(`Namaste ${ord.customer.name}! This is Shivay Collections (Barwar Kheri). Your order ${ord.id} has been verified and is being prepared for dispatch.`);
-                                window.open(`https://wa.me/${ord.customer.phone.replace(/\D/g, '')}?text=${msg}`, '_blank');
-                              }}
-                              className="w-full py-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition"
-                            >
-                              <span>Message on WhatsApp</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </button>
-                          </div>
+                          <button
+                            onClick={() => {
+                              const msg = encodeURIComponent(`Namaste ${ord.customer.name}! This is Shivay Collections (Barwar Kheri). Your order ${ord.id} has been verified.`);
+                              window.open(`https://wa.me/${ord.customer.phone.replace(/\D/g, '')}?text=${msg}`, '_blank');
+                            }}
+                            className="w-full mt-2 py-1 px-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center justify-center gap-1"
+                          >
+                            <span>WhatsApp Customer</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </button>
                         </div>
 
-                        {/* Payment Verification & Billing */}
-                        <div className="space-y-2 bg-stone-50 p-4 rounded-2xl border border-stone-100">
-                          <span className="font-bold text-stone-900 uppercase tracking-wide block">
-                            Payment & Finance Verification
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-stone-600">
-                              Payment Mode: <strong className="text-stone-900">{ord.paymentMethod}</strong>
-                            </p>
-                            <p className="text-stone-600">
-                              Total Amount: <strong className="text-brand-700 text-sm">{formatPrice(ord.total)}</strong>
-                            </p>
-                            {ord.coupon && (
-                              <p className="text-emerald-700">Coupon applied: {ord.coupon}</p>
-                            )}
-                          </div>
+                        <div className="space-y-1.5 bg-stone-50 p-3.5 rounded-2xl border border-stone-100">
+                          <span className="font-bold text-stone-900 uppercase text-[10px] block">Payment</span>
+                          <p className="text-stone-600">Mode: <strong className="text-stone-900">{ord.paymentMethod}</strong></p>
+                          <p className="text-stone-600">Total: <strong className="text-brand-700">{formatPrice(ord.total)}</strong></p>
 
-                          <div className="pt-2">
-                            <label className="block text-[11px] font-bold text-stone-700 mb-1">
-                              Payment Verification Status:
-                            </label>
-                            <select
-                              value={paymentStatus}
-                              onChange={(e) => updatePaymentVerification(ord.id, e.target.value)}
-                              className="w-full p-2 rounded-lg border border-stone-300 text-xs font-semibold bg-white"
-                            >
-                              <option value="Paid Online (Razorpay Verified)">Paid Online (Razorpay Verified)</option>
-                              <option value="COD Confirmed by Phone Call">COD Confirmed by Phone Call</option>
-                              <option value="Pending Verification">Pending Verification</option>
-                              <option value="Payment Rejected / Cancelled">Payment Rejected / Cancelled</option>
-                            </select>
-                          </div>
+                          <select
+                            value={paymentStatus}
+                            onChange={(e) => updatePaymentVerification(ord.id, e.target.value)}
+                            className="w-full mt-2 p-1.5 rounded-lg border border-stone-300 text-[11px] font-semibold bg-white"
+                          >
+                            <option value="Paid Online (Razorpay Verified)">Paid Online (Verified)</option>
+                            <option value="COD Confirmed by Phone Call">COD Confirmed</option>
+                            <option value="Pending Verification">Pending Verification</option>
+                            <option value="Payment Rejected">Rejected</option>
+                          </select>
                         </div>
 
-                        {/* Order Status & Items */}
-                        <div className="space-y-2 bg-stone-50 p-4 rounded-2xl border border-stone-100">
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-stone-900 uppercase tracking-wide">
-                              Items Ordered ({ord.items.length})
-                            </span>
-                            <span className="text-[11px] text-stone-500">Dispatch Stage</span>
-                          </div>
-
+                        <div className="space-y-1.5 bg-stone-50 p-3.5 rounded-2xl border border-stone-100">
+                          <span className="font-bold text-stone-900 uppercase text-[10px] block">Status</span>
                           <select
                             value={ord.status}
                             onChange={(e) => updateOrderStatus(ord.id, e.target.value)}
-                            className="w-full p-2 rounded-lg border border-stone-300 text-xs font-bold bg-white mb-2"
+                            className="w-full p-1.5 rounded-lg border border-stone-300 text-[11px] font-bold bg-white"
                           >
                             <option value="Pending Verification">Pending Verification</option>
-                            <option value="Order Verified & Confirmed">Order Verified & Confirmed</option>
+                            <option value="Order Verified & Confirmed">Order Verified</option>
                             <option value="Packed">Packed</option>
-                            <option value="Shipped">Shipped / Dispatched</option>
+                            <option value="Shipped">Shipped</option>
                             <option value="Out for Delivery">Out for Delivery</option>
                             <option value="Delivered">Delivered</option>
                             <option value="Cancelled">Cancelled</option>
                           </select>
 
-                          <div className="max-h-24 overflow-y-auto space-y-1">
+                          <div className="max-h-20 overflow-y-auto space-y-1 pt-1">
                             {ord.items.map((it, idx) => (
-                              <div key={idx} className="flex justify-between items-center text-[11px] text-stone-700">
-                                <span className="truncate max-w-[150px]">{it.name} (x{it.quantity})</span>
+                              <div key={idx} className="flex justify-between text-[10px] text-stone-600">
+                                <span className="truncate max-w-[120px]">{it.name} (x{it.quantity})</span>
                                 <span className="font-bold">{formatPrice(it.price * it.quantity)}</span>
                               </div>
                             ))}
                           </div>
                         </div>
-
                       </div>
 
                     </div>
@@ -995,26 +933,26 @@ export const AdminPanel = () => {
       {/* Change PIN Modal */}
       {showPinModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 border border-stone-200 shadow-2xl">
+          <div className="bg-white rounded-3xl p-6 max-w-xs w-full space-y-4 border border-stone-200 shadow-2xl">
             <div className="flex justify-between items-center">
-              <h3 className="font-serif text-base font-bold text-stone-900">Change Owner PIN</h3>
-              <button onClick={() => setShowPinModal(false)} className="text-stone-400 hover:text-stone-600">✕</button>
+              <h3 className="font-serif text-sm font-bold text-stone-900">Change Owner PIN</h3>
+              <button onClick={() => setShowPinModal(false)} className="text-stone-400">✕</button>
             </div>
-            <p className="text-xs text-stone-500">
-              Set a new 4 to 6 digit security code to protect your dashboard from unauthorized visitors.
+            <p className="text-[11px] text-stone-500">
+              Set a new 4 to 6 digit security code.
             </p>
             <input
               type="password"
               maxLength={6}
               value={newPinInput}
               onChange={(e) => setNewPinInput(e.target.value)}
-              placeholder="Enter new PIN"
-              className="w-full py-2.5 px-4 rounded-xl border border-stone-300 text-center text-lg font-bold tracking-widest"
+              placeholder="New PIN"
+              className="w-full py-2 px-3 rounded-xl border border-stone-300 text-center text-lg font-bold tracking-widest"
             />
             <div className="flex gap-2">
               <button
                 onClick={() => setShowPinModal(false)}
-                className="flex-1 py-2 rounded-xl border border-stone-200 text-stone-600 text-xs font-bold"
+                className="flex-1 py-1.5 rounded-xl border border-stone-200 text-stone-600 text-xs font-bold"
               >
                 Cancel
               </button>
@@ -1025,9 +963,9 @@ export const AdminPanel = () => {
                     setNewPinInput('');
                   }
                 }}
-                className="flex-1 py-2 rounded-xl bg-stone-900 text-white text-xs font-bold hover:bg-brand-600"
+                className="flex-1 py-1.5 rounded-xl bg-stone-900 text-white text-xs font-bold hover:bg-brand-600"
               >
-                Save New PIN
+                Save PIN
               </button>
             </div>
           </div>

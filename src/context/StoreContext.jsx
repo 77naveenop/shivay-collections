@@ -14,6 +14,11 @@ export const StoreProvider = ({ children }) => {
     if (legacyOrders && legacyOrders.includes('SHIV-78214')) {
       localStorage.removeItem('shivay_orders');
     }
+    // Update owner pin to 7379 if it was previously 8888 or uninitialized
+    const savedPin = localStorage.getItem('shivay_owner_pin');
+    if (!savedPin || savedPin === '8888') {
+      localStorage.setItem('shivay_owner_pin', '7379');
+    }
   }, []);
 
   // Products State (initialized from LocalStorage or empty INITIAL_PRODUCTS)
@@ -29,7 +34,6 @@ export const StoreProvider = ({ children }) => {
     return INITIAL_PRODUCTS;
   });
 
-  // Save products when modified in Owner Dashboard
   useEffect(() => {
     localStorage.setItem('shivay_products_clean', JSON.stringify(products));
   }, [products]);
@@ -85,30 +89,36 @@ export const StoreProvider = ({ children }) => {
     localStorage.setItem('shivay_orders_clean', JSON.stringify(orders));
   }, [orders]);
 
-  // Owner Authentication State (Security for Dashboard)
+  // Owner Authentication State (Private PIN: 7379)
   const [isOwnerAuthenticated, setIsOwnerAuthenticated] = useState(() => {
     return localStorage.getItem('shivay_owner_auth') === 'true';
   });
 
   const [ownerPin, setOwnerPin] = useState(() => {
-    return localStorage.getItem('shivay_owner_pin') || '8888';
+    const saved = localStorage.getItem('shivay_owner_pin');
+    if (!saved || saved === '8888') {
+      localStorage.setItem('shivay_owner_pin', '7379');
+      return '7379';
+    }
+    return saved;
   });
 
   const verifyOwnerPIN = (inputPin) => {
-    if (inputPin === ownerPin) {
+    const currentPin = localStorage.getItem('shivay_owner_pin') || '7379';
+    if (inputPin === currentPin) {
       setIsOwnerAuthenticated(true);
       localStorage.setItem('shivay_owner_auth', 'true');
-      showToast('Welcome back, Owner of Shivay Collections!');
+      showToast('Welcome back, Owner!');
       return true;
     }
-    showToast('Incorrect Owner PIN. Default PIN is 8888', 'error');
+    showToast('Incorrect Owner PIN. Access denied.', 'error');
     return false;
   };
 
   const logoutOwner = () => {
     setIsOwnerAuthenticated(false);
     localStorage.removeItem('shivay_owner_auth');
-    showToast('Logged out from Owner Portal', 'info');
+    showToast('Dashboard locked', 'info');
   };
 
   const changeOwnerPIN = (newPin) => {
@@ -169,7 +179,7 @@ export const StoreProvider = ({ children }) => {
       }
     });
 
-    showToast(`Added "${product.name.slice(0, 25)}..." to your bag!`);
+    showToast(`Added "${product.name.slice(0, 25)}..." to bag!`);
   };
 
   // Remove from cart
@@ -225,7 +235,7 @@ export const StoreProvider = ({ children }) => {
       return false;
     }
     setAppliedCoupon(found);
-    showToast(`Coupon ${found.code} applied successfully!`);
+    showToast(`Coupon ${found.code} applied!`);
     return true;
   };
 
@@ -277,8 +287,6 @@ export const StoreProvider = ({ children }) => {
   };
 
   // OWNER DASHBOARD ACTIONS:
-
-  // Add Product
   const addProduct = (newProduct) => {
     const product = {
       ...newProduct,
@@ -289,29 +297,26 @@ export const StoreProvider = ({ children }) => {
       inStock: true
     };
     setProducts(prev => [product, ...prev]);
-    showToast(`"${product.name}" added to catalog!`);
+    showToast(`"${product.name}" added to catalogue!`);
     return product;
   };
 
-  // Edit / Update Product
   const updateProduct = (updated) => {
     setProducts(prev => prev.map(p => (p.id === updated.id ? updated : p)));
     showToast(`Updated "${updated.name}" successfully!`);
   };
 
-  // Delete Product
   const deleteProduct = (id) => {
     const item = products.find(p => p.id === id);
     setProducts(prev => prev.filter(p => p.id !== id));
-    showToast(`Deleted "${item?.name || 'product'}" from catalog`, 'info');
+    showToast(`Deleted product`, 'info');
   };
 
-  // Order Verification Actions
   const updateOrderStatus = (orderId, newStatus) => {
     setOrders(prev =>
       prev.map(o => (o.id === orderId ? { ...o, status: newStatus } : o))
     );
-    showToast(`Order ${orderId} status set to ${newStatus}`);
+    showToast(`Order status: ${newStatus}`);
   };
 
   const updatePaymentVerification = (orderId, paymentStatus) => {
@@ -328,7 +333,7 @@ export const StoreProvider = ({ children }) => {
           : o
       )
     );
-    showToast(`Payment verification updated: ${paymentStatus}`);
+    showToast(`Payment status: ${paymentStatus}`);
   };
 
   const verifyCustomerAddress = (orderId, isVerified) => {
@@ -365,18 +370,18 @@ export const StoreProvider = ({ children }) => {
           : o
       )
     );
-    showToast(`Order ${orderId} has been verified and confirmed for dispatch!`);
+    showToast(`Order ${orderId} verified and confirmed!`);
   };
 
   const deleteOrder = (orderId) => {
     setOrders(prev => prev.filter(o => o.id !== orderId));
-    showToast(`Order ${orderId} removed`, 'info');
+    showToast(`Order removed`, 'info');
   };
 
   const clearAllOrders = () => {
     setOrders([]);
     localStorage.removeItem('shivay_orders_clean');
-    showToast('All order records cleared', 'info');
+    showToast('All order history cleared', 'info');
   };
 
   return (
