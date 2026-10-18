@@ -7,10 +7,10 @@ import {
   X, 
   Sparkles, 
   Package, 
-  Settings, 
-  Globe, 
   ShieldCheck, 
-  PhoneCall
+  Globe, 
+  MapPin,
+  Lock
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 
@@ -25,17 +25,18 @@ export const Navbar = () => {
     selectedCategory, 
     setSelectedCategory,
     activeTab,
-    setActiveTab 
+    setActiveTab,
+    isOwnerAuthenticated 
   } = useStore();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const categories = [
-    { id: 'all', label: 'All Store' },
-    { id: 'women', label: 'Women' },
-    { id: 'men', label: 'Men' },
+    { id: 'all', label: 'All Catalogue' },
+    { id: 'women', label: 'Women\'s Wear' },
+    { id: 'men', label: 'Men\'s Collection' },
     { id: 'kids', label: 'Kids & Teens' },
-    { id: 'cosmetics', label: 'Cosmetics' },
+    { id: 'cosmetics', label: 'Cosmetics & Beauty' },
   ];
 
   return (
@@ -43,23 +44,25 @@ export const Navbar = () => {
       {/* Top Announcement Bar */}
       <div className="bg-stone-900 text-stone-200 text-xs py-2 px-4">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+          
           <div className="flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span className="font-medium tracking-wide">
-              Festive Season Live: Use code <strong className="text-brand-300 font-bold">SHIVAY10</strong> for 10% OFF
+              Official Store: <strong className="text-brand-300 font-bold">Shivay Collections</strong> • Barwar Kheri
             </span>
           </div>
           
           <div className="flex items-center space-x-6 text-[11px] text-stone-400">
             <span className="flex items-center gap-1.5 hover:text-white transition">
               <Globe className="w-3.5 h-3.5 text-brand-400" />
-              <span>Official Domain: <strong className="text-stone-200">shivaycollections.com</strong></span>
+              <span>Domain: <strong className="text-stone-200 font-mono">shivaycollections.com</strong></span>
             </span>
             <span className="hidden md:flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
               100% Original Products | Free Delivery over ₹999
             </span>
           </div>
+
         </div>
       </div>
 
@@ -67,30 +70,39 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 gap-4">
           
-          {/* Brand Logo */}
+          {/* Brand Logo with Image */}
           <div className="flex items-center gap-3">
             <button 
               onClick={() => { setActiveTab('store'); setSelectedCategory('all'); }}
-              className="group flex flex-col text-left focus:outline-none"
+              className="group flex items-center gap-3 text-left focus:outline-none"
             >
-              <div className="flex items-center gap-2">
-                <span className="w-9 h-9 rounded-lg bg-stone-900 text-brand-400 flex items-center justify-center font-serif text-2xl font-bold shadow-md group-hover:bg-brand-500 group-hover:text-white transition-colors duration-300">
-                  S
-                </span>
-                <div>
-                  <h1 className="font-serif tracking-widest text-2xl font-black text-stone-900 uppercase leading-none group-hover:text-brand-600 transition">
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-brand-400/90 shadow-md group-hover:scale-105 transition-transform shrink-0 bg-stone-50">
+                <img 
+                  src="/logo.jpg" 
+                  alt="Shivay Collections Logo" 
+                  className="w-full h-full object-cover" 
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h1 className="font-serif tracking-widest text-xl sm:text-2xl font-black text-stone-900 uppercase leading-none group-hover:text-brand-700 transition">
                     SHIVAY
                   </h1>
-                  <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-brand-600 block mt-0.5">
+                  <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-brand-600">
                     COLLECTIONS
                   </span>
+                </div>
+                <div className="flex items-center gap-1 text-[10px] text-stone-500 font-medium mt-0.5">
+                  <MapPin className="w-2.5 h-2.5 text-rose-500" />
+                  <span>Barwar Kheri • Clothing & Cosmetics</span>
                 </div>
               </div>
             </button>
           </div>
 
-          {/* Desktop Search Bar */}
-          <div className="hidden lg:flex flex-1 max-w-md mx-6">
+          {/* Search Bar */}
+          <div className="hidden lg:flex flex-1 max-w-md mx-4">
             <div className="relative w-full">
               <input
                 type="text"
@@ -99,8 +111,8 @@ export const Navbar = () => {
                   setSearchQuery(e.target.value);
                   if (activeTab !== 'store') setActiveTab('store');
                 }}
-                placeholder="Search sarees, kurtas, suits, kids wear, serums, perfume..."
-                className="w-full bg-stone-100/90 text-stone-900 pl-11 pr-10 py-2.5 rounded-full text-sm border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:bg-white transition"
+                placeholder="Search clothes, sarees, kurtas, serums, lipstick..."
+                className="w-full bg-stone-100/90 text-stone-900 pl-11 pr-10 py-2.5 rounded-full text-xs border border-stone-200 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:bg-white transition"
               />
               <Search className="w-4 h-4 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
               {searchQuery && (
@@ -115,32 +127,21 @@ export const Navbar = () => {
           </div>
 
           {/* Right Action Icons */}
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             
-            {/* Domain Setup Guide Link */}
-            <button
-              onClick={() => setActiveTab('domain-guide')}
-              className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition ${
-                activeTab === 'domain-guide'
-                  ? 'bg-brand-50 text-brand-800 border-brand-300'
-                  : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
-              }`}
-            >
-              <Globe className="w-3.5 h-3.5 text-brand-600" />
-              Domain Setup
-            </button>
-
-            {/* Admin Portal Button */}
+            {/* Owner Dashboard Button */}
             <button
               onClick={() => setActiveTab(activeTab === 'admin' ? 'store' : 'admin')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition shadow-sm ${
                 activeTab === 'admin'
-                  ? 'bg-purple-50 text-purple-700 border-purple-300'
-                  : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
+                  ? 'bg-brand-500 text-stone-950 border-brand-500 ring-2 ring-brand-300'
+                  : 'bg-stone-900 text-white border-stone-900 hover:bg-stone-800'
               }`}
             >
-              <Settings className="w-3.5 h-3.5 text-stone-600" />
-              <span className="hidden sm:inline">{activeTab === 'admin' ? 'Back to Store' : 'Admin Panel'}</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-brand-300" />
+              <span className="hidden sm:inline">
+                {activeTab === 'admin' ? 'Storefront' : 'Owner Dashboard'}
+              </span>
             </button>
 
             {/* My Orders Button */}
@@ -214,26 +215,15 @@ export const Navbar = () => {
           ))}
           <span className="text-stone-300">|</span>
           <button 
-            onClick={() => { setActiveTab('store'); setSelectedCategory('women'); }} 
-            className="text-xs tracking-wider uppercase text-rose-600 hover:text-rose-700 font-semibold"
+            onClick={() => setActiveTab('domain-guide')}
+            className="text-xs tracking-wider uppercase text-stone-500 hover:text-stone-800 font-semibold flex items-center gap-1"
           >
-            Festive Sarees
-          </button>
-          <button 
-            onClick={() => { setActiveTab('store'); setSelectedCategory('men'); }} 
-            className="text-xs tracking-wider uppercase text-amber-700 hover:text-amber-800 font-semibold"
-          >
-            Raw Silk Kurtas
-          </button>
-          <button 
-            onClick={() => { setActiveTab('store'); setSelectedCategory('cosmetics'); }} 
-            className="text-xs tracking-wider uppercase text-purple-700 hover:text-purple-800 font-semibold"
-          >
-            24K Gold Serums
+            <Globe className="w-3 h-3 text-brand-500" />
+            <span>shivaycollections.com Setup</span>
           </button>
         </div>
 
-        {/* Mobile Search & Menu */}
+        {/* Mobile Dropdown */}
         {mobileMenuOpen && (
           <div className="lg:hidden py-4 border-t border-stone-200 space-y-4">
             <div className="relative">
@@ -242,7 +232,7 @@ export const Navbar = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search clothes, cosmetics..."
-                className="w-full bg-stone-100 pl-10 pr-4 py-2 rounded-lg text-sm border border-stone-200"
+                className="w-full bg-stone-100 pl-10 pr-4 py-2 rounded-lg text-xs border border-stone-200"
               />
               <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </div>
@@ -269,25 +259,18 @@ export const Navbar = () => {
 
             <div className="pt-2 border-t border-stone-100 flex flex-col gap-2">
               <button
+                onClick={() => { setActiveTab('admin'); setMobileMenuOpen(false); }}
+                className="flex items-center gap-2 p-2.5 text-xs font-bold text-stone-950 bg-brand-100 rounded-xl"
+              >
+                <ShieldCheck className="w-4 h-4 text-brand-700" />
+                <span>Owner Dashboard (Manage Products)</span>
+              </button>
+              <button
                 onClick={() => { setActiveTab('domain-guide'); setMobileMenuOpen(false); }}
                 className="flex items-center gap-2 p-2 text-xs font-medium text-stone-700 hover:bg-stone-100 rounded"
               >
                 <Globe className="w-4 h-4 text-brand-600" />
                 Domain Setup (shivaycollections.com)
-              </button>
-              <button
-                onClick={() => { setActiveTab('orders'); setMobileMenuOpen(false); }}
-                className="flex items-center gap-2 p-2 text-xs font-medium text-stone-700 hover:bg-stone-100 rounded"
-              >
-                <Package className="w-4 h-4 text-stone-600" />
-                My Orders & Tracking
-              </button>
-              <button
-                onClick={() => { setActiveTab('admin'); setMobileMenuOpen(false); }}
-                className="flex items-center gap-2 p-2 text-xs font-medium text-stone-700 hover:bg-stone-100 rounded"
-              >
-                <Settings className="w-4 h-4 text-purple-600" />
-                Admin Dashboard
               </button>
             </div>
           </div>

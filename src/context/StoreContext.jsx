@@ -4,9 +4,21 @@ import { INITIAL_PRODUCTS, COUPONS } from '../data/products';
 const StoreContext = createContext();
 
 export const StoreProvider = ({ children }) => {
-  // Products State (initialized from LocalStorage or INITIAL_PRODUCTS)
+  // Clear out any legacy dummy data from previous session
+  useEffect(() => {
+    const legacyProducts = localStorage.getItem('shivay_products');
+    if (legacyProducts && (legacyProducts.includes('w-1') || legacyProducts.includes('Banarasi'))) {
+      localStorage.removeItem('shivay_products');
+    }
+    const legacyOrders = localStorage.getItem('shivay_orders');
+    if (legacyOrders && legacyOrders.includes('SHIV-78214')) {
+      localStorage.removeItem('shivay_orders');
+    }
+  }, []);
+
+  // Products State (initialized from LocalStorage or empty INITIAL_PRODUCTS)
   const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('shivay_products');
+    const saved = localStorage.getItem('shivay_products_clean');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -17,9 +29,9 @@ export const StoreProvider = ({ children }) => {
     return INITIAL_PRODUCTS;
   });
 
-  // Save products when modified in Admin
+  // Save products when modified in Owner Dashboard
   useEffect(() => {
-    localStorage.setItem('shivay_products', JSON.stringify(products));
+    localStorage.setItem('shivay_products_clean', JSON.stringify(products));
   }, [products]);
 
   // Cart State
@@ -56,9 +68,9 @@ export const StoreProvider = ({ children }) => {
     localStorage.setItem('shivay_wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
 
-  // Orders State
+  // Orders State (100% clean, zero dummy orders)
   const [orders, setOrders] = useState(() => {
-    const saved = localStorage.getItem('shivay_orders');
+    const saved = localStorage.getItem('shivay_orders_clean');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -66,40 +78,49 @@ export const StoreProvider = ({ children }) => {
         return [];
       }
     }
-    return [
-      {
-        id: 'SHIV-78214',
-        date: '16 Oct 2026',
-        status: 'Delivered',
-        customer: {
-          name: 'Vikram Rajput',
-          phone: '+91 98765 43210',
-          email: 'vikram.rajput@gmail.com',
-          address: 'Flat 402, Lotus Towers, Andheri West, Mumbai, MH - 400053'
-        },
-        items: [
-          {
-            id: 'm-1',
-            name: 'Handloom Raw Silk Festive Kurta with Churidar',
-            price: 1899,
-            quantity: 1,
-            selectedSize: '40 (M)',
-            selectedColor: 'Mustard Gold',
-            image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=400&q=80'
-          }
-        ],
-        subtotal: 1899,
-        discount: 189,
-        shipping: 0,
-        total: 1710,
-        paymentMethod: 'Razorpay UPI (Google Pay)'
-      }
-    ];
+    return [];
   });
 
   useEffect(() => {
-    localStorage.setItem('shivay_orders', JSON.stringify(orders));
+    localStorage.setItem('shivay_orders_clean', JSON.stringify(orders));
   }, [orders]);
+
+  // Owner Authentication State (Security for Dashboard)
+  const [isOwnerAuthenticated, setIsOwnerAuthenticated] = useState(() => {
+    return localStorage.getItem('shivay_owner_auth') === 'true';
+  });
+
+  const [ownerPin, setOwnerPin] = useState(() => {
+    return localStorage.getItem('shivay_owner_pin') || '8888';
+  });
+
+  const verifyOwnerPIN = (inputPin) => {
+    if (inputPin === ownerPin) {
+      setIsOwnerAuthenticated(true);
+      localStorage.setItem('shivay_owner_auth', 'true');
+      showToast('Welcome back, Owner of Shivay Collections!');
+      return true;
+    }
+    showToast('Incorrect Owner PIN. Default PIN is 8888', 'error');
+    return false;
+  };
+
+  const logoutOwner = () => {
+    setIsOwnerAuthenticated(false);
+    localStorage.removeItem('shivay_owner_auth');
+    showToast('Logged out from Owner Portal', 'info');
+  };
+
+  const changeOwnerPIN = (newPin) => {
+    if (newPin && newPin.length >= 4) {
+      setOwnerPin(newPin);
+      localStorage.setItem('shivay_owner_pin', newPin);
+      showToast('Owner PIN updated successfully!');
+      return true;
+    }
+    showToast('PIN must be at least 4 digits', 'error');
+    return false;
+  };
 
   // UI Modals & Drawers
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -148,13 +169,13 @@ export const StoreProvider = ({ children }) => {
       }
     });
 
-    showToast(`Added "${product.name.slice(0, 30)}..." to your bag!`);
+    showToast(`Added "${product.name.slice(0, 25)}..." to your bag!`);
   };
 
   // Remove from cart
   const removeFromCart = (cartItemId) => {
     setCart(prev => prev.filter(item => item.cartItemId !== cartItemId));
-    showToast('Item removed from cart', 'info');
+    showToast('Item removed from bag', 'info');
   };
 
   // Update item quantity
@@ -179,10 +200,10 @@ export const StoreProvider = ({ children }) => {
     setWishlist(prev => {
       const exists = prev.some(item => item.id === product.id);
       if (exists) {
-        showToast(`Removed from Wishlist`, 'info');
+        showToast('Removed from Wishlist', 'info');
         return prev.filter(item => item.id !== product.id);
       } else {
-        showToast(`Saved to your Wishlist!`);
+        showToast('Saved to your Wishlist!');
         return [...prev, product];
       }
     });
@@ -217,7 +238,6 @@ export const StoreProvider = ({ children }) => {
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartSubtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // Discount calculation
   let discountAmount = 0;
   if (appliedCoupon) {
     if (appliedCoupon.discountType === 'percentage') {
@@ -227,16 +247,21 @@ export const StoreProvider = ({ children }) => {
     }
   }
 
-  // Free shipping on orders above ₹999
   const shippingFee = cartSubtotal >= 999 || cartSubtotal === 0 ? 0 : 99;
   const grandTotal = Math.max(0, cartSubtotal - discountAmount + shippingFee);
 
-  // Create new order
+  // Create new customer order
   const createOrder = (orderData) => {
     const newOrder = {
       id: `SHIV-${Math.floor(10000 + Math.random() * 90000)}`,
       date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
-      status: 'Confirmed',
+      timestamp: Date.now(),
+      status: 'Pending Verification',
+      verificationStatus: {
+        isOrderVerified: false,
+        isAddressVerified: false,
+        paymentVerification: orderData.paymentMethod.includes('COD') ? 'Pending COD Confirmation' : 'Paid Online (Pending Bank Settlement)'
+      },
       items: [...cart],
       subtotal: cartSubtotal,
       discount: discountAmount,
@@ -251,34 +276,107 @@ export const StoreProvider = ({ children }) => {
     return newOrder;
   };
 
-  // Admin Actions
+  // OWNER DASHBOARD ACTIONS:
+
+  // Add Product
   const addProduct = (newProduct) => {
     const product = {
       ...newProduct,
-      id: `cust-${Date.now()}`,
+      id: `prod-${Date.now()}`,
       rating: 5.0,
-      reviewCount: 1,
+      reviewCount: 0,
+      createdAt: Date.now(),
       inStock: true
     };
     setProducts(prev => [product, ...prev]);
-    showToast('New product added to Shivay Collections store!');
+    showToast(`"${product.name}" added to catalog!`);
+    return product;
   };
 
+  // Edit / Update Product
   const updateProduct = (updated) => {
     setProducts(prev => prev.map(p => (p.id === updated.id ? updated : p)));
-    showToast('Product updated successfully!');
+    showToast(`Updated "${updated.name}" successfully!`);
   };
 
+  // Delete Product
   const deleteProduct = (id) => {
+    const item = products.find(p => p.id === id);
     setProducts(prev => prev.filter(p => p.id !== id));
-    showToast('Product removed from catalog', 'info');
+    showToast(`Deleted "${item?.name || 'product'}" from catalog`, 'info');
   };
 
+  // Order Verification Actions
   const updateOrderStatus = (orderId, newStatus) => {
     setOrders(prev =>
       prev.map(o => (o.id === orderId ? { ...o, status: newStatus } : o))
     );
     showToast(`Order ${orderId} status set to ${newStatus}`);
+  };
+
+  const updatePaymentVerification = (orderId, paymentStatus) => {
+    setOrders(prev =>
+      prev.map(o =>
+        o.id === orderId
+          ? {
+              ...o,
+              verificationStatus: {
+                ...o.verificationStatus,
+                paymentVerification: paymentStatus
+              }
+            }
+          : o
+      )
+    );
+    showToast(`Payment verification updated: ${paymentStatus}`);
+  };
+
+  const verifyCustomerAddress = (orderId, isVerified) => {
+    setOrders(prev =>
+      prev.map(o =>
+        o.id === orderId
+          ? {
+              ...o,
+              verificationStatus: {
+                ...o.verificationStatus,
+                isAddressVerified: isVerified
+              }
+            }
+          : o
+      )
+    );
+    showToast(isVerified ? 'Address marked as Verified' : 'Address unverified');
+  };
+
+  const markOrderFullyVerified = (orderId) => {
+    setOrders(prev =>
+      prev.map(o =>
+        o.id === orderId
+          ? {
+              ...o,
+              status: 'Order Verified & Confirmed',
+              verificationStatus: {
+                ...o.verificationStatus,
+                isOrderVerified: true,
+                isAddressVerified: true,
+                paymentVerification: o.paymentMethod.includes('COD') ? 'COD Verified by Owner' : 'Online Payment Verified'
+              }
+            }
+          : o
+      )
+    );
+    showToast(`Order ${orderId} has been verified and confirmed for dispatch!`);
+  };
+
+  const deleteOrder = (orderId) => {
+    setOrders(prev => prev.filter(o => o.id !== orderId));
+    showToast(`Order ${orderId} removed`, 'info');
+  };
+
+  const clearAllOrders = () => {
+    setOrders([]);
+    localStorage.removeItem('shivay_orders_clean');
+    showToast('All order records cleared', 'info');
   };
 
   return (
@@ -319,10 +417,19 @@ export const StoreProvider = ({ children }) => {
         applyCouponCode,
         removeCoupon,
         createOrder,
+        isOwnerAuthenticated,
+        verifyOwnerPIN,
+        logoutOwner,
+        changeOwnerPIN,
         addProduct,
         updateProduct,
         deleteProduct,
-        updateOrderStatus
+        updateOrderStatus,
+        updatePaymentVerification,
+        verifyCustomerAddress,
+        markOrderFullyVerified,
+        deleteOrder,
+        clearAllOrders
       }}
     >
       {children}

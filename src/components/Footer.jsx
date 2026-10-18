@@ -16,12 +16,12 @@ export const Footer = () => {
         {/* Main 4-column footer */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           
-          {/* Brand Info */}
+          {/* Brand Info with Logo */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-stone-900 border border-brand-500/40 text-brand-400 flex items-center justify-center font-serif text-xl font-bold">
-                S
-              </span>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-brand-400 shrink-0 bg-white shadow-md">
+                <img src="/logo.jpg" alt="Shivay Collections Logo" className="w-full h-full object-cover" />
+              </div>
               <div>
                 <h3 className="font-serif tracking-widest text-lg font-black text-white uppercase leading-none">
                   SHIVAY
@@ -29,21 +29,26 @@ export const Footer = () => {
                 <span className="text-[9px] uppercase font-bold tracking-[0.25em] text-brand-400 block mt-0.5">
                   COLLECTIONS
                 </span>
+                <span className="text-[10px] text-stone-400 font-medium">Clothing & Cosmetics Store</span>
               </div>
             </div>
 
             <p className="text-xs text-stone-400 leading-relaxed">
-              Your premier online destination for handcrafted Indian traditional wear, modern western fashion for all age groups, and pure Ayurvedic skincare & cosmetics.
+              Your trusted family store in <strong>Barwar Kheri</strong> offering all kinds of clothes for men, women, kids of all ages, and beauty cosmetics.
             </p>
 
             <div className="pt-2 text-xs space-y-2 text-stone-400">
+              <p className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-rose-400 shrink-0" />
+                <span className="text-stone-300">Barwar Kheri, India</span>
+              </p>
               <p className="flex items-center gap-2">
                 <Globe className="w-4 h-4 text-brand-400 shrink-0" />
                 <span className="text-stone-200 font-mono">shivaycollections.com</span>
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-brand-400 shrink-0" />
-                <span>+91 98765 43210 (Mon - Sat, 10 AM - 7 PM)</span>
+                <span>+91 98765 43210</span>
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-brand-400 shrink-0" />
@@ -63,7 +68,7 @@ export const Footer = () => {
                   onClick={() => { setSelectedCategory('women'); setActiveTab('store'); scrollToTop(); }}
                   className="hover:text-brand-300 transition"
                 >
-                  Women's Banarasi Sarees & Kurtis
+                  Women's Wear (Sarees, Kurtis & Suits)
                 </button>
               </li>
               <li>
@@ -71,7 +76,7 @@ export const Footer = () => {
                   onClick={() => { setSelectedCategory('men'); setActiveTab('store'); scrollToTop(); }}
                   className="hover:text-brand-300 transition"
                 >
-                  Men's Raw Silk Kurtas & Shirts
+                  Men's Collection (Kurtas & Shirts)
                 </button>
               </li>
               <li>
@@ -79,7 +84,7 @@ export const Footer = () => {
                   onClick={() => { setSelectedCategory('kids'); setActiveTab('store'); scrollToTop(); }}
                   className="hover:text-brand-300 transition"
                 >
-                  Kids & Teens Festive & Party Wear
+                  Kids & Teens (All Age Groups)
                 </button>
               </li>
               <li>
@@ -87,15 +92,7 @@ export const Footer = () => {
                   onClick={() => { setSelectedCategory('cosmetics'); setActiveTab('store'); scrollToTop(); }}
                   className="hover:text-brand-300 transition"
                 >
-                  24K Gold Serums & Kannauj Perfumes
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => { setSelectedCategory('all'); setActiveTab('store'); scrollToTop(); }}
-                  className="hover:text-brand-300 transition"
-                >
-                  Special Offers & Festive Deals
+                  Cosmetics & Beauty Essentials
                 </button>
               </li>
             </ul>
@@ -104,9 +101,17 @@ export const Footer = () => {
           {/* Customer Care */}
           <div className="space-y-3">
             <h4 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
-              Customer Services
+              Management & Care
             </h4>
             <ul className="space-y-2 text-xs text-stone-400">
+              <li>
+                <button 
+                  onClick={() => { setActiveTab('admin'); scrollToTop(); }}
+                  className="text-brand-300 font-bold hover:text-brand-200 transition"
+                >
+                  👑 Owner Dashboard Login
+                </button>
+              </li>
               <li>
                 <button 
                   onClick={() => { setActiveTab('orders'); scrollToTop(); }}
@@ -120,44 +125,29 @@ export const Footer = () => {
                   onClick={() => { setActiveTab('domain-guide'); scrollToTop(); }}
                   className="hover:text-brand-300 transition"
                 >
-                  Domain & Store Setup
+                  Domain Setup Guide
                 </button>
               </li>
               <li><span className="hover:text-stone-300 cursor-pointer">Shipping & Delivery Policy</span></li>
-              <li><span className="hover:text-stone-300 cursor-pointer">7-Day Return & Exchange</span></li>
-              <li><span className="hover:text-stone-300 cursor-pointer">Privacy Policy & Terms</span></li>
             </ul>
           </div>
 
-          {/* Newsletter & Indian Payment Badges */}
+          {/* Payment Badges & Barwar Kheri Store Note */}
           <div className="space-y-3">
             <h4 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
-              Stay Connected
+              Store Guarantee
             </h4>
             <p className="text-xs text-stone-400">
-              Subscribe to get exclusive preview of new festive launches and coupon drops.
+              Direct from Shivay Collections, Barwar Kheri. Quality checked before every doorstep dispatch.
             </p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Enter email address"
-                className="w-full px-3 py-2 rounded-xl bg-stone-900 border border-stone-800 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-brand-500"
-              />
-              <button 
-                onClick={() => alert('Thank you for subscribing to Shivay Collections updates!')}
-                className="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-stone-950 font-bold text-xs transition"
-              >
-                Join
-              </button>
-            </div>
 
-            <div className="pt-3">
+            <div className="pt-2">
               <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider block mb-2">
-                100% Secure Payments
+                Accepted Payments
               </span>
               <div className="flex flex-wrap gap-2 text-[10px] font-bold text-stone-300">
-                <span className="px-2 py-1 bg-stone-900 rounded border border-stone-800">UPI (GPay/PhonePe)</span>
-                <span className="px-2 py-1 bg-stone-900 rounded border border-stone-800">RuPay & Visa</span>
+                <span className="px-2 py-1 bg-stone-900 rounded border border-stone-800">UPI (GPay / PhonePe)</span>
+                <span className="px-2 py-1 bg-stone-900 rounded border border-stone-800">RuPay & Cards</span>
                 <span className="px-2 py-1 bg-stone-900 rounded border border-stone-800">NetBanking</span>
                 <span className="px-2 py-1 bg-stone-900 rounded border border-stone-800">Cash on Delivery</span>
               </div>
@@ -169,7 +159,7 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-stone-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
           <p>
-            © 2026 <strong className="text-stone-300">shivaycollections.com</strong>. All rights reserved. Handcrafted with pride in India.
+            © 2026 <strong className="text-stone-300">Shivay Collections</strong> (shivaycollections.com) • Barwar Kheri. All rights reserved.
           </p>
 
           <button
